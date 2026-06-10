@@ -15,6 +15,9 @@ jobs:
         with:
           node-version: "24.x"
 
+      - name: Ver a versão do Node e do npm juntas
+        run: node -v && npm -v
+
       - name: Execute JSON format validation script
         run: node .github/workflows/utils/executeSyntaxValidation tokens.json
 
