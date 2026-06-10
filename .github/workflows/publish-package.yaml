@@ -28,9 +28,9 @@ jobs:
           node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Ver a versão do Node e do npm juntas
+      - name: Ver a versão do Node e do npm juntass
         run: node -v && npm -v
-        
+
       - name: Configure Git Bot
         run: |
           git config --global user.name "github-actions[bot]"
