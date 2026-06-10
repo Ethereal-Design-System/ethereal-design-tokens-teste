@@ -1,0 +1,19 @@
+name: Validate JSON Syntax
+
+on:
+  workflow_call:
+  
+jobs:
+  check-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Execute JSON format validation script
+        run: node .github/workflows/utils/executeSyntaxValidation tokens.json

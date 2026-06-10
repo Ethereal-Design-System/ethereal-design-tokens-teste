@@ -1,0 +1,24 @@
+{
+  "name": "ethereal-design-tokens-teste",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "increase-version": "npm version minor -m 'chore(package): update version to %s [skip ci]' "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ethereal-Design-System/ethereal-design-tokens-teste.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ethereal-Design-System/ethereal-design-tokens-teste/issues"
+  },
+  "homepage": "https://github.com/Ethereal-Design-System/ethereal-design-tokens-teste#readme",
+  "description": ""
+}
+
