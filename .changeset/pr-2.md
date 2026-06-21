@@ -2,7 +2,7 @@
 "ethereal-design-tokens-teste": minor
 ---
 
-Create home page 
+Create home page    
 
 ### Description
 
