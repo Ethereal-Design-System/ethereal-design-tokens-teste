@@ -1,0 +1,72 @@
+name: PR Changeset
+
+# Gera/atualiza automaticamente um changeset quando a PR tiver a label.
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, labeled, unlabeled, synchronize]
+    branches:
+      - main
+
+concurrency:
+  group: pr-changeset-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  changeset:
+    name: Create/Update Changeset
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'MAJOR') ||
+      contains(github.event.pull_request.labels.*.name, 'MINOR') ||
+      contains(github.event.pull_request.labels.*.name, 'PATCH')
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+
+      - name: Generate changeset file
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          # Bump = primeira label de release encontrada (MAJOR > MINOR > PATCH)
+          case ",$LABELS," in
+            *,MAJOR,*) BUMP=major ;;
+            *,MINOR,*) BUMP=minor ;;
+            *,PATCH,*) BUMP=patch ;;
+          esac
+
+          PKG_NAME=$(node -p "require('./package.json').name")
+          FILE=".changeset/pr-${PR_NUMBER}.md"
+          mkdir -p .changeset
+
+          {
+            echo "---"
+            echo "\"${PKG_NAME}\": ${BUMP}"
+            echo "---"
+            echo ""
+            echo "${PR_TITLE}"
+            [ -n "$PR_BODY" ] && printf '\n%s\n' "$PR_BODY"
+          } > "$FILE"
+
+          echo "Gerado $FILE (bump: $BUMP)"
+
+      - name: Commit changeset
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ".changeset/pr-${PR_NUMBER}.md"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: update changeset for PR #${PR_NUMBER}"
+          git push
