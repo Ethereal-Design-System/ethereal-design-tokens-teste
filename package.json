@@ -19,5 +19,8 @@
     "url": "https://github.com/Ethereal-Design-System/ethereal-design-tokens-teste/issues"
   },
   "homepage": "https://github.com/Ethereal-Design-System/ethereal-design-tokens-teste#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@changesets/cli": "^2.31.0"
+  }
 }
