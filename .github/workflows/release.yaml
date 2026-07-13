@@ -38,11 +38,11 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v2
+        uses: changesets/action@v1
         with:
-          publish-script: npx changeset publish
-          pr-title: "Release version ${{ steps.version_info.outputs.version }}"
-          commit-message: "chore: release v${{ steps.version_info.outputs.version }}"
+          publish: npx changeset publish
+          title: "Release version ${{ steps.version_info.outputs.version }}"
+          commit: "chore: release v${{ steps.version_info.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
