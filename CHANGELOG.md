@@ -1,5 +1,14 @@
 # ethereal-design-tokens-teste
 
+## 1.5.0
+
+### Minor Changes
+
+- d9fa3dd: Update title in index.html
+- f823c54: Fix heading text in index.html
+
+  ..................
+
 ## 1.4.0
 
 ### Minor Changes
