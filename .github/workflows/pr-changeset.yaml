@@ -1,6 +1,6 @@
 name: PR Changeset
 
-# Gera/atualiza automaticamente um changeset quando a PR tiver a label.
+# Generate/update automatically a changeset when a PR have a valid label.
 
 on:
   pull_request:
@@ -20,9 +20,9 @@ jobs:
     name: Create/Update Changeset
     runs-on: ubuntu-latest
     if: |
-      contains(github.event.pull_request.labels.*.name, 'MAJOR') ||
-      contains(github.event.pull_request.labels.*.name, 'MINOR') ||
-      contains(github.event.pull_request.labels.*.name, 'PATCH')
+      contains(github.event.pull_request.labels.*.name, 'release major') ||
+      contains(github.event.pull_request.labels.*.name, 'release minor') ||
+      contains(github.event.pull_request.labels.*.name, 'release patch')
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v6
@@ -38,11 +38,10 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
           LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
-          # Bump = primeira label de release encontrada (MAJOR > MINOR > PATCH)
           case ",$LABELS," in
-            *,MAJOR,*) BUMP=major ;;
-            *,MINOR,*) BUMP=minor ;;
-            *,PATCH,*) BUMP=patch ;;
+            *,release major,*) BUMP=major ;;
+            *,release minor,*) BUMP=minor ;;
+            *,release patch,*) BUMP=patch ;;
           esac
 
           PKG_NAME=$(node -p "require('./package.json').name")
