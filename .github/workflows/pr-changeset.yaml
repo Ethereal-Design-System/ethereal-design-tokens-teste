@@ -1,34 +1,37 @@
 name: PR Changeset
 
-# Generate/update automatically a changeset when a PR have a valid label.
+# Gera um changeset automaticamente quando um PR com label de release é
+# mergeado na main, usando label, título e descrição do PR.
 
 on:
   pull_request:
-    types: [opened, reopened, edited, labeled, unlabeled, synchronize]
+    types: [closed]
     branches:
       - main
 
 concurrency:
-  group: pr-changeset-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: pr-changeset-main
+  cancel-in-progress: false
 
 permissions:
   contents: write
 
 jobs:
   changeset:
-    name: Create/Update Changeset
+    name: Create Changeset on Merge
     runs-on: ubuntu-latest
     if: |
-      contains(github.event.pull_request.labels.*.name, 'release major') ||
-      contains(github.event.pull_request.labels.*.name, 'release minor') ||
-      contains(github.event.pull_request.labels.*.name, 'release patch')
+      github.event.pull_request.merged == true &&
+      (
+        contains(github.event.pull_request.labels.*.name, 'release major') ||
+        contains(github.event.pull_request.labels.*.name, 'release minor') ||
+        contains(github.event.pull_request.labels.*.name, 'release patch')
+      )
     steps:
-      - name: Checkout PR branch
+      - name: Checkout main
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: main
           token: ${{ secrets.BOT_GITHUB_TOKEN_TEST }}
 
       - name: Generate changeset file
@@ -67,5 +70,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ".changeset/pr-${PR_NUMBER}.md"
           git diff --cached --quiet && exit 0
-          git commit -m "chore: update changeset for PR #${PR_NUMBER}"
-          git push
+          git commit -m "chore: add changeset for PR #${PR_NUMBER}"
+          git push origin main
