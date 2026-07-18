@@ -1,43 +1,46 @@
 name: Release Pipeline
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-      - '.vscode/**'
-      - '.github/workflows/**'
-      - '.gitignore'
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - "docs/**"
+            - "**/*.md"
+            - ".vscode/**"
+            - ".github/workflows/**"
+            - ".gitignore"
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
-
+permissions:
+    contents: write # Permite criar tags, commits e dar push
+    pull-requests: write # Permite que o Changesets crie o PR de release automaticamente
 jobs:
-  release:
-    name: Create Release PR or Publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Código
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    release:
+        name: Create Release PR or Publish
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Código
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.BOT_GITHUB_TOKEN }}
+            - name: Configurar Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: "npm"
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
+            - name: Instalar Dependências
+              run: npm install
 
-      - name: Instalar Dependências
-        run: npm install
-
-      - name: Action do Changeset (Versão e Publicação)
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: npm run release
-          version: npx changeset version
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Action do Changeset (Versão e Publicação)
+              id: changesets
+              uses: changesets/action@v1
+              with:
+                  publish: npm run release
+                  version: npx changeset version
+                  create-github-releases: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
