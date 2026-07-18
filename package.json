@@ -1,6 +1,6 @@
 {
   "name": "ethereal-design-tokens-teste",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "main": "index.js",
   "scripts": {
     "increase-version": "npm version minor -m 'chore(package): update version to %s [skip ci]' ",
@@ -30,4 +30,3 @@
     "@changesets/cli": "^2.31.1"
   }
 }
-
