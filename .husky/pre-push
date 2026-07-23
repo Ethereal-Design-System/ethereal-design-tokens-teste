@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+npm run typecheck
+npm run test
+
+echo "🔍 Running version check..."
+
+if npm run version-check; then
+  echo "✅ Version check passed."
+else
+  echo "⚠️ Changes detected against develop."
+  echo "📝 Running changeset..."
+
+  npm run changeset
+
+  echo "✅ Changeset created. Continuing push..."
+fi
+
+exit 0
